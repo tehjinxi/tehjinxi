@@ -1,0 +1,44 @@
+; Multiplication Table program       (subr.asm)
+
+; Calls external C++ functions.
+
+INCLUDE Irvine32.inc ;must include library
+
+askForInteger PROTO C
+showInt PROTO C, value:SDWORD
+
+ENDING_POWER = 10
+
+.data
+intVal DWORD 10 DUP (?)
+store dword ?
+.code
+
+;---------------------------------------------
+DisplayTable PROC C
+;
+; Inputs an integer n and displays a
+; multiplication table ranging from n * 2^1
+; to n * 2^10.
+;----------------------------------------------
+	INVOKE askForInteger	; call C++ function
+	mov	store,eax            	; save the integer (cin in c++)
+	mov	ecx,ENDING_POWER       	; loop counter, initial 10 to ecx
+	mov esi,0
+	mov edi,0
+
+L1:	push ecx                    	; save loop counter
+	mov eax,edi
+	mul  store   
+	mov intVal[esi],eax
+	INVOKE showInt,intVal[esi]
+	call	Crlf
+	inc edi
+	add esi,4
+	pop	ecx	; restore loop counter
+    loop	L1
+
+	ret ;return to main program
+DisplayTable ENDP
+
+END
